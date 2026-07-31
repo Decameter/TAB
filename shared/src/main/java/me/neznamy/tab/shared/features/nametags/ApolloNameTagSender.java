@@ -133,6 +133,8 @@ public class ApolloNameTagSender {
         BelowName belowName = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.BELOW_NAME);
         if (belowName != null && !target.belowNameData.disabled.get() && target.belowNameData.apolloFancyValue != null) {
             String value = target.belowNameData.apolloFancyValue.getFormat(viewer);
+            String title = target.belowNameData.title.getFormat(viewer);
+            if (!title.isEmpty()) value = value.isEmpty() ? title : value + " " + title;
             if (!value.isEmpty()) lines.add(value);
         }
         return lines;
