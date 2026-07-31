@@ -21,7 +21,6 @@ dependencies {
     compileOnlyApi("org.geysermc.floodgate:api:2.2.0-SNAPSHOT")
     compileOnlyApi("net.kyori:adventure-api:4.25.0-SNAPSHOT")
     compileOnlyApi("net.kyori:adventure-text-minimessage:4.25.0-SNAPSHOT")
-    compileOnlyApi("net.kyori:adventure-text-serializer-legacy:4.25.0-SNAPSHOT")
     compileOnlyApi("com.lunarclient:apollo-api:1.2.8") // Lunar Client Apollo
     implementation("com.saicone.delivery4j:delivery4j:1.1.1")
     implementation("com.saicone.delivery4j:broker-rabbitmq:1.1.1") {

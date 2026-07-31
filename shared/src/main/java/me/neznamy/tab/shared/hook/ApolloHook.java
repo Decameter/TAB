@@ -9,10 +9,10 @@ import com.lunarclient.apollo.player.ApolloPlayer;
 import com.lunarclient.apollo.recipients.Recipients;
 import lombok.Getter;
 import me.neznamy.tab.shared.TAB;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
+import me.neznamy.tab.shared.chat.hook.AdventureHook;
 import me.neznamy.tab.shared.util.ReflectionUtils;
+import me.neznamy.tab.shared.util.cache.StringToComponentCache;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -76,16 +76,17 @@ public class ApolloHook {
 
     /**
      * Overrides nametag of {@code target} for {@code viewer} using the Apollo Nametag module.
-     * Lines are expected to be already colorized using {@code &} color codes, in the order they
-     * should be displayed top to bottom. Does nothing if Apollo is not installed, viewer is not
-     * an Apollo player or the Nametag module is disabled.
+     * Lines are expected to be already fully resolved (placeholders replaced), in the order they
+     * should be displayed top to bottom, using any color format TAB supports (legacy, hex, gradients,
+     * MiniMessage). Does nothing if Apollo is not installed, viewer is not an Apollo player or the
+     * Nametag module is disabled.
      *
      * @param   viewer
      *          UUID of the viewing player
      * @param   target
      *          UUID of the player whose nametag should be overridden
      * @param   lines
-     *          Lines to display, top to bottom, using {@code &} color codes
+     *          Lines to display, top to bottom
      */
     public void overrideNametag(@NotNull UUID viewer, @NotNull UUID target, @NotNull List<String> lines) {
         if (!installed || lines.isEmpty()) return;
@@ -96,7 +97,7 @@ public class ApolloHook {
             if (!module.isEnabled()) return;
             List<Component> components = new ArrayList<>(lines.size());
             for (String line : lines) {
-                components.add(LegacyComponentSerializer.legacySection().deserialize(EnumChatFormat.color(line)));
+                components.add(AdventureHook.convert(StringToComponentCache.GLOBAL.convert(line)));
             }
             Collections.reverse(components); // Apollo renders lines in the reversed order
             Recipients recipients = Recipients.of(Collections.singletonList(apolloViewer.get()));
