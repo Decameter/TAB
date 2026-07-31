@@ -5,6 +5,7 @@ plugins {
 repositories {
     maven("https://jitpack.io") // YamlAssist
     maven("https://repo.opencollab.dev/maven-snapshots/")
+    maven("https://repo.lunarclient.dev/") // Lunar Client Apollo
     maven("https://repo.viaversion.com/")
     maven {
         name = "luck-repo"

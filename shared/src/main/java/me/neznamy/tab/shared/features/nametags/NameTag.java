@@ -56,6 +56,7 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
         disableChecker = new DisableChecker(this, TAB.getInstance().getPlaceholderManager().getConditionManager().getByNameOrExpression(configuration.getDisableCondition()), this::onDisableConditionChange, p -> p.teamData.disabled);
         visibilityManager = new VisibilityManager(this);
         collisionManager = new CollisionManager(this);
+        ApolloNameTagSender.getInstance(); // Registers the Apollo player registration listener
         TAB.getInstance().getFeatureManager().registerFeature(TabConstants.Feature.NAME_TAGS + "-Condition", disableChecker);
         if (proxy != null) {
             proxy.registerMessage(NameTagProxyPlayerData.class, in -> new NameTagProxyPlayerData(in, this));
@@ -447,6 +448,39 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
             p.teamData.suffix.setTemporaryValue(suffix);
             prefixSuffixManager.updatePrefixSuffix(p);
         }, getFeatureName(), "Processing API call (setSuffix)"));
+    }
+
+    @Override
+    public void setApolloNametag(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable List<String> lines) {
+        ensureActive();
+        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+            TabPlayer p = (TabPlayer) player;
+            p.ensureLoaded();
+            if (lines == null) {
+                p.teamData.apiApolloNametagOverride = null;
+            } else {
+                List<Property> properties = new ArrayList<>(lines.size());
+                for (String line : lines) {
+                    properties.add(new Property(prefixSuffixManager, p, line));
+                }
+                p.teamData.apiApolloNametagOverride = properties;
+            }
+            ApolloNameTagSender.getInstance().refreshForTarget(p);
+        }, getFeatureName(), "Processing API call (setApolloNametag)"));
+    }
+
+    @Override
+    @Nullable
+    public List<String> getApolloNametag(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
+        TabPlayer p = (TabPlayer) player;
+        p.ensureLoaded();
+        if (p.teamData.apiApolloNametagOverride == null) return null;
+        List<String> lines = new ArrayList<>(p.teamData.apiApolloNametagOverride.size());
+        for (Property line : p.teamData.apiApolloNametagOverride) {
+            lines.add(line.getCurrentRawValue());
+        }
+        return lines;
     }
 
     @Override

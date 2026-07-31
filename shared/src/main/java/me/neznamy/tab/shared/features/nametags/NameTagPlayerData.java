@@ -33,6 +33,14 @@ public class NameTagPlayerData {
     /** Player's tagsuffix */
     public Property suffix;
 
+    /** Nametag lines for viewers using Lunar Client, configured via the "apollo" group section, null if not configured */
+    @Nullable
+    public List<Property> apolloNametagOverride;
+
+    /** Nametag lines for viewers using Lunar Client, forced using the API, null if not forced */
+    @Nullable
+    public List<Property> apiApolloNametagOverride;
+
     /** Flag tracking whether this feature is disabled for the player with condition or not */
     public final AtomicBoolean disabled = new AtomicBoolean();
 
@@ -251,6 +259,7 @@ public class NameTagPlayerData {
                                  @NotNull Collection<String> players, int options, @NotNull EnumChatFormat color) {
         registeredTeams.put(target, teamName);
         player.getScoreboard().registerTeam(teamName, prefix, suffix, visibility, collision, players, options, color);
+        ApolloNameTagSender.getInstance().update(player, target);
     }
 
     public void registerTeam(@NotNull ProxyPlayer target, @NotNull String teamName, @NotNull TabComponent prefix, @NotNull TabComponent suffix,
@@ -293,6 +302,7 @@ public class NameTagPlayerData {
         String teamName = registeredTeams.remove(teamOwner);
         if (teamName != null) {
             player.getScoreboard().unregisterTeam(teamName);
+            ApolloNameTagSender.getInstance().reset(player, teamOwner);
         }
     }
 

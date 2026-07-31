@@ -5,6 +5,7 @@ plugins {
 repositories {
     maven("https://jitpack.io") // YamlAssist
     maven("https://repo.opencollab.dev/maven-snapshots/")
+    maven("https://repo.lunarclient.dev/") // Lunar Client Apollo
     maven("https://repo.viaversion.com/")
     maven {
         name = "luck-repo"
@@ -25,4 +26,12 @@ dependencies {
 
 tasks.compileJava {
     options.release.set(21)
+}
+
+java {
+    toolchain {
+        // paperweight-userdev's bundled remapper can't parse class files from newer JDKs,
+        // and this module doesn't need anything past 21 anyway (see release above).
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
 }

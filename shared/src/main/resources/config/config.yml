@@ -56,6 +56,9 @@ belowname-objective:
   enabled: false
   value: "%health%"
   fancy-value: "&c%health%"
+  # Extra line shown instead of the above, only to viewers seeing this player using Lunar Client (Apollo).
+  # Defaults to the same value as "fancy-value" if not set.
+  #apollo-fancy-value: "&c%health%"
   fancy-value-default: "NPC"
   title: "&cHealth"
   disable-condition: '%world%=disabledworld'

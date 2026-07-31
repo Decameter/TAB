@@ -3,6 +3,7 @@ package me.neznamy.tab.shared.config;
 import com.google.common.collect.Lists;
 import lombok.NonNull;
 import me.neznamy.tab.shared.TAB;
+import me.neznamy.tab.shared.TabConstants;
 import me.neznamy.tab.shared.data.Server;
 import me.neznamy.tab.shared.data.World;
 import org.jetbrains.annotations.NotNull;
@@ -19,7 +20,7 @@ public interface PropertyConfiguration {
 
     /** List of all valid properties for groups and users */
     @NotNull
-    List<String> VALID_PROPERTIES = Lists.newArrayList("tagprefix", "tagsuffix", "tabprefix", "customtabname", "tabsuffix");
+    List<String> VALID_PROPERTIES = Lists.newArrayList("tagprefix", "tagsuffix", "tabprefix", "customtabname", "tabsuffix", "apollo");
 
     /**
      * Sets property value of group or user to specified value. If {@code world} or
@@ -163,6 +164,32 @@ public interface PropertyConfiguration {
             return Arrays.asList(string.split("\n"));
         }
         return string;
+    }
+
+    /**
+     * Returns list of nametag override lines configured for given group under its "apollo"
+     * &gt; "nametag-override" section, used for viewers who see this group's players using
+     * Lunar Client's Apollo API. Falls back to {@code _DEFAULT_} group if not configured for
+     * given group. Returns {@code null} if not configured anywhere.
+     *
+     * @param   groupOrUser
+     *          Name of group or user to get the value for
+     * @return  List of configured lines, or {@code null} if not configured
+     */
+    @Nullable
+    default List<String> getApolloNametagOverride(@NonNull String groupOrUser) {
+        Object section = getGlobalSettings(groupOrUser).get("apollo");
+        if (section == null && !groupOrUser.equals(TabConstants.DEFAULT_GROUP)) {
+            section = getGlobalSettings(TabConstants.DEFAULT_GROUP).get("apollo");
+        }
+        if (!(section instanceof Map)) return null;
+        Object lines = ((Map<?, ?>) section).get("nametag-override");
+        if (!(lines instanceof List)) return null;
+        List<String> result = new ArrayList<>();
+        for (Object line : (List<?>) lines) {
+            result.add(String.valueOf(line));
+        }
+        return result;
     }
 
     /**

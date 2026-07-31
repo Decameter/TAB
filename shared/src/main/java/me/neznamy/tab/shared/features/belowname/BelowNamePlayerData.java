@@ -15,6 +15,9 @@ public class BelowNamePlayerData {
     /** Player's number format (1.20.3+) */
     public Property fancyValue;
 
+    /** Player's number format shown as an extra nametag line to viewers using Lunar Client (Apollo) */
+    public Property apolloFancyValue;
+
     /** Objective title */
     public Property title;
 

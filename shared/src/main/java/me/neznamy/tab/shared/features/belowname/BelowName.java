@@ -9,6 +9,7 @@ import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.cpu.TimedCaughtTask;
 import me.neznamy.tab.shared.data.Server;
 import me.neznamy.tab.shared.data.World;
+import me.neznamy.tab.shared.features.nametags.ApolloNameTagSender;
 import me.neznamy.tab.shared.features.proxy.ProxyPlayer;
 import me.neznamy.tab.shared.features.proxy.ProxySupport;
 import me.neznamy.tab.shared.features.types.*;
@@ -87,6 +88,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
     private void loadProperties(@NotNull TabPlayer player) {
         player.belowNameData.value = new Property(this, player, configuration.getValue());
         player.belowNameData.fancyValue = new Property(this, player, configuration.getFancyValue());
+        player.belowNameData.apolloFancyValue = new Property(this, player, configuration.getApolloFancyValue());
         player.belowNameData.title = new Property(titleRefresher, player, configuration.getTitle());
         player.belowNameData.defaultNumberFormat = new Property(titleRefresher, player, configuration.getFancyValueDefault());
     }
@@ -134,6 +136,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
      *          Whether the feature is disabled now or not
      */
     public void onDisableConditionChange(TabPlayer p, boolean disabledNow) {
+        ApolloNameTagSender.getInstance().refreshForTarget(p);
         if (disabledNow) {
             p.getScoreboard().unregisterObjective(OBJECTIVE_NAME);
         } else {
@@ -195,10 +198,12 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
         int value = getValue(refreshed);
         Property fancyValue = refreshed.belowNameData.fancyValue;
         fancyValue.update();
+        refreshed.belowNameData.apolloFancyValue.update();
         for (TabPlayer viewer : onlinePlayers.getPlayers()) {
             setScore(viewer, refreshed, value, fancyValue.getFormat(viewer));
         }
         sendProxyMessage(refreshed.getUniqueId(), value, fancyValue.get());
+        ApolloNameTagSender.getInstance().refreshForTarget(refreshed);
     }
 
     private void register(@NotNull TabPlayer player) {

@@ -12,6 +12,12 @@ _DEFAULT_:
   customtabname: "%player%"
   tabsuffix: "%luckperms-suffix%"
   tagsuffix: "%luckperms-suffix%"
+  # Optional, only affects viewers seeing this group's players using Lunar Client (Apollo).
+  # If not set, nametags shown to those viewers mirror the vanilla tagprefix+name+tagsuffix format instead.
+  #apollo:
+  #  nametag-override:
+  #  - "%tagprefix%%player%%tagsuffix%"
+  #  - "&c%health%"
 
 per-world:
   world1:

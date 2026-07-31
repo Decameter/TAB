@@ -20,6 +20,7 @@ public class BelowNameConfiguration {
     @NotNull private final String value;
     @NotNull private final String title;
     @NotNull private final String fancyValue;
+    @NotNull private final String apolloFancyValue;
     @NotNull private final String fancyValueDefault;
     @NotNull private final String disableCondition;
 
@@ -34,7 +35,7 @@ public class BelowNameConfiguration {
     @NotNull
     public static BelowNameConfiguration fromSection(@NotNull ConfigurationSection section) {
         // Check keys
-        section.checkForUnknownKey(Arrays.asList("enabled", "value", "title", "fancy-value-default", "fancy-value", "disable-condition"));
+        section.checkForUnknownKey(Arrays.asList("enabled", "value", "title", "fancy-value-default", "fancy-value", "apollo-fancy-value", "disable-condition"));
 
         // Check placeholders in title
         String title = section.getString("title", "Health");
@@ -66,11 +67,13 @@ public class BelowNameConfiguration {
             }
         }
 
+        String fancyValue = section.getString("fancy-value", "&c" + TabConstants.Placeholder.HEALTH);
         return new BelowNameConfiguration(
                 section,
                 value,
                 title,
-                section.getString("fancy-value", "&c" + TabConstants.Placeholder.HEALTH),
+                fancyValue,
+                section.getString("apollo-fancy-value", fancyValue),
                 section.getString("fancy-value-default", "NPC"),
                 section.getString("disable-condition", "%world%=disabledworld")
         );

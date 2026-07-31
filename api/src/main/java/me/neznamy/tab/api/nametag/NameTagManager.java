@@ -6,6 +6,8 @@ import me.neznamy.tab.api.TabPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 /**
  * Interface for manipulating player name tags.
  * <p>
@@ -241,6 +243,35 @@ public interface NameTagManager {
     @Deprecated
     @NotNull
     String getOriginalSuffix(@NonNull TabPlayer player);
+
+    /**
+     * Overrides nametag lines shown to viewers who are using Lunar Client (via the Apollo API)
+     * for the specified player. Lines are displayed top to bottom, support placeholders as well
+     * as any supported RGB formats, same as {@link #setPrefix(TabPlayer, String)}. Use {@code null}
+     * to reset back to the value configured in the "apollo" group section (or the default
+     * vanilla-like format if not configured).
+     * <p>
+     * This has no effect on viewers who are not using Lunar Client.
+     *
+     * @param   player
+     *          player to change the Apollo nametag override of
+     * @param   lines
+     *          new lines to display, top to bottom, or {@code null} to reset
+     * @see     #getApolloNametag(TabPlayer)
+     */
+    void setApolloNametag(@NonNull TabPlayer player, @Nullable List<String> lines);
+
+    /**
+     * Returns nametag lines assigned using {@link #setApolloNametag(TabPlayer, List)}.
+     * If no custom lines are set using the API, returns {@code null}.
+     *
+     * @param   player
+     *          Player to get custom Apollo nametag lines of
+     * @return  Custom lines assigned using the API, or {@code null} if not set
+     * @see     #setApolloNametag(TabPlayer, List)
+     */
+    @Nullable
+    List<String> getApolloNametag(@NonNull TabPlayer player);
 
     /**
      * Toggles name tag visibility view on all players for specified player.

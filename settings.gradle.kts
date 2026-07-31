@@ -9,6 +9,7 @@ dependencyResolutionManagement {
         maven("https://repo.papermc.io/repository/maven-public/") // paperweight, Velocity, Adventure, BungeeCord-API
         maven("https://repo.extendedclip.com/content/repositories/placeholderapi/") // PlaceholderAPI
         maven("https://repo.opencollab.dev/maven-snapshots/") // Floodgate, Bungeecord-proxy
+        maven("https://repo.lunarclient.dev/") // Lunar Client Apollo
         maven("https://repo.purpurmc.org/snapshots") // Purpur
         maven("https://jitpack.io") // PremiumVanish, Vault, YamlAssist, RedisBungee
         maven("https://mvn.lib.co.nz/public") // LibsDisguises

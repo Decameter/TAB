@@ -2,12 +2,18 @@ package me.neznamy.tab.shared.features.nametags;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import me.neznamy.tab.shared.Property;
+import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.cpu.ThreadExecutor;
 import me.neznamy.tab.shared.data.Server;
 import me.neznamy.tab.shared.data.World;
 import me.neznamy.tab.shared.features.types.*;
 import me.neznamy.tab.shared.platform.TabPlayer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Sub-feature for NameTags for managing prefix/suffix.
@@ -33,8 +39,26 @@ public class PrefixSuffixManager extends RefreshableFeature implements GroupList
         } else {
             boolean prefix = refreshed.teamData.prefix.update();
             boolean suffix = refreshed.teamData.suffix.update();
-            if (prefix || suffix) updatePrefixSuffix(refreshed);
+            boolean apollo = updateApolloOverride(refreshed);
+            if (prefix || suffix || apollo) updatePrefixSuffix(refreshed);
         }
+    }
+
+    /**
+     * Updates placeholders in the group's configured "apollo" nametag override lines, if any
+     * are configured for the player. Returns {@code true} if at least one line's value changed.
+     *
+     * @param   p
+     *          Player to update apollo override lines of
+     * @return  {@code true} if at least one line changed, {@code false} if not
+     */
+    private boolean updateApolloOverride(@NotNull TabPlayer p) {
+        if (p.teamData.apolloNametagOverride == null) return false;
+        boolean changed = false;
+        for (Property line : p.teamData.apolloNametagOverride) {
+            if (line.update()) changed = true;
+        }
+        return changed;
     }
 
     @Override
@@ -69,6 +93,7 @@ public class PrefixSuffixManager extends RefreshableFeature implements GroupList
     private boolean updateProperties(@NotNull TabPlayer p) {
         boolean changed = p.updatePropertyFromConfig(p.teamData.prefix, "");
         if (p.updatePropertyFromConfig(p.teamData.suffix, "")) changed = true;
+        p.teamData.apolloNametagOverride = loadApolloOverride(p);
         return changed;
     }
 
@@ -87,6 +112,7 @@ public class PrefixSuffixManager extends RefreshableFeature implements GroupList
                         feature.getSuffixCache().get(player.teamData.suffix.getFormat(viewer)),
                         feature.getLastColorCache().get(player.teamData.prefix.getFormat(viewer)).getLastStyle().toEnumChatFormat()
                 );
+                ApolloNameTagSender.getInstance().update(viewer, player);
             }
         }
         feature.getProxyHandler().sendProxyMessage(player);
@@ -101,6 +127,25 @@ public class PrefixSuffixManager extends RefreshableFeature implements GroupList
     public void loadProperties(@NotNull TabPlayer player) {
         player.teamData.prefix = player.loadPropertyFromConfig(this, "tagprefix", "");
         player.teamData.suffix = player.loadPropertyFromConfig(this, "tagsuffix", "");
+        player.teamData.apolloNametagOverride = loadApolloOverride(player);
+    }
+
+    /**
+     * Loads "apollo" &gt; "nametag-override" lines configured for player's group, if any.
+     *
+     * @param   player
+     *          Player to load the lines for
+     * @return  List of properties representing the configured lines, or {@code null} if not configured
+     */
+    @Nullable
+    private List<Property> loadApolloOverride(@NotNull TabPlayer player) {
+        List<String> lines = TAB.getInstance().getConfiguration().getGroups().getApolloNametagOverride(player.getGroup());
+        if (lines == null || lines.isEmpty()) return null;
+        List<Property> properties = new ArrayList<>(lines.size());
+        for (String line : lines) {
+            properties.add(new Property(this, player, line));
+        }
+        return properties;
     }
 
     @Override
