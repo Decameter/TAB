@@ -3,6 +3,7 @@ package me.neznamy.tab.shared;
 import lombok.Getter;
 import lombok.Setter;
 import me.neznamy.tab.api.TabAPI;
+import me.neznamy.tab.api.belowname.BelowNameManager;
 import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.api.scoreboard.ScoreboardManager;
 import me.neznamy.tab.api.tablist.HeaderFooterManager;
@@ -318,6 +319,11 @@ public class TAB extends TabAPI {
     @Override
     public @Nullable NameTag getNameTagManager() {
         return featureManager.getFeature(TabConstants.Feature.NAME_TAGS);
+    }
+
+    @Override
+    public @Nullable BelowNameManager getBelowNameManager() {
+        return featureManager.getFeature(TabConstants.Feature.BELOW_NAME);
     }
 
     @Override

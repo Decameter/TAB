@@ -103,16 +103,24 @@ public class ApolloNameTagSender {
      */
     @NotNull
     private List<String> computeLines(@NonNull TabPlayer viewer, @NonNull TabPlayer target) {
+        List<String> result = new ArrayList<>();
+        List<Property> aboveLines = target.teamData.apiApolloAboveNametagLines;
+        if (aboveLines != null) {
+            for (Property line : aboveLines) {
+                result.add(line.getFormat(viewer));
+            }
+        }
+
         List<Property> lines = target.teamData.apiApolloNametagOverride;
         if (lines == null) lines = target.teamData.apolloNametagOverride;
         if (lines != null && !lines.isEmpty()) {
-            List<String> resolved = new ArrayList<>(lines.size());
             for (Property line : lines) {
-                resolved.add(line.getFormat(viewer));
+                result.add(line.getFormat(viewer));
             }
-            return resolved;
+        } else {
+            result.addAll(defaultLines(viewer, target));
         }
-        return defaultLines(viewer, target);
+        return result;
     }
 
     /**
@@ -133,8 +141,9 @@ public class ApolloNameTagSender {
         BelowName belowName = TAB.getInstance().getFeatureManager().getFeature(TabConstants.Feature.BELOW_NAME);
         if (belowName != null && !target.belowNameData.disabled.get() && target.belowNameData.apolloFancyValue != null) {
             String value = target.belowNameData.apolloFancyValue.getFormat(viewer);
-            String title = target.belowNameData.title.getFormat(viewer);
+            String title = target.belowNameData.title.getFormat(viewer).trim();
             if (!title.isEmpty()) value = value.isEmpty() ? title : value + " " + title;
+            value = value.trim();
             if (!value.isEmpty()) lines.add(value);
         }
         return lines;

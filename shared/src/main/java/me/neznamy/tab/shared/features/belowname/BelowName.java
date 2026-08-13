@@ -1,6 +1,8 @@
 package me.neznamy.tab.shared.features.belowname;
 
 import lombok.Getter;
+import lombok.NonNull;
+import me.neznamy.tab.api.belowname.BelowNameManager;
 import me.neznamy.tab.shared.Property;
 import me.neznamy.tab.shared.ProtocolVersion;
 import me.neznamy.tab.shared.TAB;
@@ -29,7 +31,8 @@ import java.util.stream.Collectors;
  */
 @Getter
 public class BelowName extends RefreshableFeature implements JoinListener, QuitListener, Loadable,
-        WorldSwitchListener, ServerSwitchListener, CustomThreaded, ProxyFeature, VanishListener, Dumpable {
+        WorldSwitchListener, ServerSwitchListener, CustomThreaded, ProxyFeature, VanishListener, Dumpable,
+        BelowNameManager {
 
     /** Objective name used by this feature */
     public static final String OBJECTIVE_NAME = "TAB-BelowName";
@@ -244,6 +247,49 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
                 );
             }
         }
+    }
+
+    @Override
+    public void setFancyValue(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable String fancyValue) {
+        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+            TabPlayer p = (TabPlayer) player;
+            p.ensureLoaded();
+            if (p.belowNameData.value == null) return; // Player not loaded by this feature yet
+            p.belowNameData.fancyValue.setTemporaryValue(fancyValue);
+            p.belowNameData.apolloFancyValue.setTemporaryValue(fancyValue);
+            int value = getValue(p);
+            for (TabPlayer viewer : onlinePlayers.getPlayers()) {
+                setScore(viewer, p, value, p.belowNameData.fancyValue.getFormat(viewer));
+            }
+            ApolloNameTagSender.getInstance().refreshForTarget(p);
+        }, getFeatureName(), "Processing API call (setFancyValue)"));
+    }
+
+    @Override
+    @Nullable
+    public String getFancyValue(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        TabPlayer p = (TabPlayer) player;
+        p.ensureLoaded();
+        return p.belowNameData.value == null ? null : p.belowNameData.fancyValue.getTemporaryValue();
+    }
+
+    @Override
+    public void setTitle(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable String title) {
+        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+            TabPlayer p = (TabPlayer) player;
+            p.ensureLoaded();
+            if (p.belowNameData.value == null) return; // Player not loaded by this feature yet
+            p.belowNameData.title.setTemporaryValue(title);
+            titleRefresher.refresh(p, true);
+        }, getFeatureName(), "Processing API call (setTitle)"));
+    }
+
+    @Override
+    @Nullable
+    public String getTitle(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        TabPlayer p = (TabPlayer) player;
+        p.ensureLoaded();
+        return p.belowNameData.value == null ? null : p.belowNameData.title.getTemporaryValue();
     }
 
     @Override

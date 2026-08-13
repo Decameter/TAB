@@ -41,6 +41,15 @@ public class NameTagPlayerData {
     @Nullable
     public List<Property> apiApolloNametagOverride;
 
+    /**
+     * Extra nametag lines for viewers using Lunar Client, shown above whatever this player's
+     * nametag would otherwise display (the default tagprefix + name + tagsuffix line, the
+     * belowname-objective line, or an override set via {@link #apolloNametagOverride}/
+     * {@link #apiApolloNametagOverride}). Set using the API, null/empty if none are added.
+     */
+    @Nullable
+    public List<Property> apiApolloAboveNametagLines;
+
     /** Flag tracking whether this feature is disabled for the player with condition or not */
     public final AtomicBoolean disabled = new AtomicBoolean();
 

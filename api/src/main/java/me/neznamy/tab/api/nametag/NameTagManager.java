@@ -274,6 +274,36 @@ public interface NameTagManager {
     List<String> getApolloNametag(@NonNull TabPlayer player);
 
     /**
+     * Adds extra nametag lines shown above whatever this player's Apollo nametag would otherwise
+     * display - the default tagprefix + name + tagsuffix line, the belowname-objective line, or a
+     * full override set via the "apollo" group section or {@link #setApolloNametag(TabPlayer, List)}.
+     * Unlike {@link #setApolloNametag(TabPlayer, List)}, this does not replace the existing lines.
+     * Lines support placeholders as well as any supported RGB formats. Use {@code null} or an empty
+     * list to remove the extra lines.
+     * <p>
+     * This has no effect on viewers who are not using Lunar Client.
+     *
+     * @param   player
+     *          player to change the extra above-nametag Apollo lines of
+     * @param   lines
+     *          new lines to display above the nametag, top to bottom, or {@code null}/empty to clear
+     * @see     #getApolloAboveNametagLines(TabPlayer)
+     */
+    void setApolloAboveNametagLines(@NonNull TabPlayer player, @Nullable List<String> lines);
+
+    /**
+     * Returns extra above-nametag lines assigned using {@link #setApolloAboveNametagLines(TabPlayer, List)}.
+     * If none are set using the API, returns {@code null}.
+     *
+     * @param   player
+     *          Player to get custom extra above-nametag Apollo lines of
+     * @return  Custom lines assigned using the API, or {@code null} if not set
+     * @see     #setApolloAboveNametagLines(TabPlayer, List)
+     */
+    @Nullable
+    List<String> getApolloAboveNametagLines(@NonNull TabPlayer player);
+
+    /**
      * Toggles name tag visibility view on all players for specified player.
      * On first call, name tags of all players will become invisible for specified
      * player. On the second call, they will become visible again.

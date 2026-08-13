@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import lombok.NonNull;
 import lombok.Setter;
+import me.neznamy.tab.api.belowname.BelowNameManager;
 import me.neznamy.tab.api.bossbar.BossBarManager;
 import me.neznamy.tab.api.event.EventBus;
 import me.neznamy.tab.api.placeholder.PlaceholderManager;
@@ -89,6 +90,13 @@ public abstract class TabAPI {
      * @return  team manager
      */
     public abstract @Nullable NameTagManager getNameTagManager();
+
+    /**
+     * Returns BelowName manager instance if the feature is enabled. If not, returns {@code null}.
+     *
+     * @return  BelowName manager
+     */
+    public abstract @Nullable BelowNameManager getBelowNameManager();
 
     /**
      * Returns header/footer manager instance if the feature is enabled. If not, returns {@code null}.

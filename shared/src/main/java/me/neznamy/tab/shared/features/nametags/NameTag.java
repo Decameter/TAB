@@ -484,6 +484,39 @@ public class NameTag extends TabFeature implements NameTagManager, JoinListener,
     }
 
     @Override
+    public void setApolloAboveNametagLines(@NonNull me.neznamy.tab.api.TabPlayer player, @Nullable List<String> lines) {
+        ensureActive();
+        customThread.execute(new TimedCaughtTask(TAB.getInstance().getCpu(), () -> {
+            TabPlayer p = (TabPlayer) player;
+            p.ensureLoaded();
+            if (lines == null || lines.isEmpty()) {
+                p.teamData.apiApolloAboveNametagLines = null;
+            } else {
+                List<Property> properties = new ArrayList<>(lines.size());
+                for (String line : lines) {
+                    properties.add(new Property(prefixSuffixManager, p, line));
+                }
+                p.teamData.apiApolloAboveNametagLines = properties;
+            }
+            ApolloNameTagSender.getInstance().refreshForTarget(p);
+        }, getFeatureName(), "Processing API call (setApolloAboveNametagLines)"));
+    }
+
+    @Override
+    @Nullable
+    public List<String> getApolloAboveNametagLines(@NonNull me.neznamy.tab.api.TabPlayer player) {
+        ensureActive();
+        TabPlayer p = (TabPlayer) player;
+        p.ensureLoaded();
+        if (p.teamData.apiApolloAboveNametagLines == null) return null;
+        List<String> lines = new ArrayList<>(p.teamData.apiApolloAboveNametagLines.size());
+        for (Property line : p.teamData.apiApolloAboveNametagLines) {
+            lines.add(line.getCurrentRawValue());
+        }
+        return lines;
+    }
+
+    @Override
     public String getCustomPrefix(@NonNull me.neznamy.tab.api.TabPlayer player) {
         ensureActive();
         TabPlayer p = (TabPlayer) player;
