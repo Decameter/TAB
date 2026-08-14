@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  * Feature handler for scoreboard objective with BELOW_NAME display slot (under name tag).
  */
 @Getter
-public class BelowName extends RefreshableFeature implements JoinListener, QuitListener, Loadable,
+public class BelowName extends RefreshableFeature implements JoinListener, QuitListener, Loadable, UnLoadable,
         WorldSwitchListener, ServerSwitchListener, CustomThreaded, ProxyFeature, VanishListener, Dumpable,
         BelowNameManager {
 
@@ -72,6 +72,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
         onlinePlayers = new OnlinePlayers(TAB.getInstance().getOnlinePlayers());
         Map<TabPlayer, Integer> values = new HashMap<>();
         for (TabPlayer loaded : onlinePlayers.getPlayers()) {
+            loaded.setBelowNameDistance(configuration.getViewDistance());
             loadProperties(loaded);
             if (disableChecker.isDisableConditionMet(loaded)) {
                 loaded.belowNameData.disabled.set(true);
@@ -88,6 +89,13 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
         }
     }
 
+    @Override
+    public void unload() {
+        for (TabPlayer all : onlinePlayers.getPlayers()) {
+            all.setBelowNameDistance(10); // Reset to default distance
+        }
+    }
+
     private void loadProperties(@NotNull TabPlayer player) {
         player.belowNameData.value = new Property(this, player, configuration.getValue());
         player.belowNameData.fancyValue = new Property(this, player, configuration.getFancyValue());
@@ -99,6 +107,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
     @Override
     public void onJoin(@NotNull TabPlayer connectedPlayer) {
         onlinePlayers.addPlayer(connectedPlayer);
+        connectedPlayer.setBelowNameDistance(configuration.getViewDistance());
         loadProperties(connectedPlayer);
         if (disableChecker.isDisableConditionMet(connectedPlayer)) {
             connectedPlayer.belowNameData.disabled.set(true);
@@ -326,6 +335,7 @@ public class BelowName extends RefreshableFeature implements JoinListener, QuitL
 
     @Override
     public void onQuit(@NotNull TabPlayer disconnectedPlayer) {
+        disconnectedPlayer.setBelowNameDistance(10); // Reset to default distance
         onlinePlayers.removePlayer(disconnectedPlayer);
     }
 

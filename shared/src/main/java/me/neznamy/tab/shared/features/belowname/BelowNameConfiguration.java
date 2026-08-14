@@ -23,6 +23,7 @@ public class BelowNameConfiguration {
     @NotNull private final String apolloFancyValue;
     @NotNull private final String fancyValueDefault;
     @NotNull private final String disableCondition;
+    private final double viewDistance;
 
     /**
      * Returns instance of this class created from given configuration section. If there are
@@ -35,7 +36,8 @@ public class BelowNameConfiguration {
     @NotNull
     public static BelowNameConfiguration fromSection(@NotNull ConfigurationSection section) {
         // Check keys
-        section.checkForUnknownKey(Arrays.asList("enabled", "value", "title", "fancy-value-default", "fancy-value", "apollo-fancy-value", "disable-condition"));
+        section.checkForUnknownKey(Arrays.asList("enabled", "value", "title", "fancy-value-default",
+                "fancy-value", "apollo-fancy-value", "disable-condition", "view-distance"));
 
         // Check placeholders in title
         String title = section.getString("title", "Health");
@@ -75,7 +77,8 @@ public class BelowNameConfiguration {
                 fancyValue,
                 section.getString("apollo-fancy-value", fancyValue),
                 section.getString("fancy-value-default", "NPC"),
-                section.getString("disable-condition", "%world%=disabledworld")
+                section.getString("disable-condition", "%world%=disabledworld"),
+                section.getNumber("view-distance", 10).doubleValue()
         );
     }
 }

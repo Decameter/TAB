@@ -100,7 +100,7 @@ public class ModernConverter {
                     defaultDesign.put("display-condition", "%condition:" + namedCondition.getName() + "%=" + namedCondition.getNo());
                 } else {
                     // Short format
-                    defaultDesign.put("display-condition", new Condition(disableCondition).invert().toShortFormat());
+                    defaultDesign.put("display-condition", Condition.fromShortFormat(disableCondition).invert().toShortFormat());
                 }
             }
             defaultDesign.put("header", defaultHeader);
@@ -134,6 +134,9 @@ public class ModernConverter {
         });
         converters.put(5, config -> {
             config.getConfigurationSection("placeholders").put("locale", "en-US");
+        });
+        converters.put(6, config -> {
+            config.getConfigurationSection("belowname-objective").put("view-distance", 10);
         });
     }
 
